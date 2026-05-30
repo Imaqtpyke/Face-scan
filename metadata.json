@@ -1,0 +1,6 @@
+{
+  "name": "Face Scan",
+  "description": "Mobile-first face scan simulator and register match directory made with glassmorphism aesthetics and custom live-webcam integrations.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
