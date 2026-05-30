@@ -47,8 +47,8 @@ export default function TipsModal({ onClose }: TipsModalProps) {
               <Sun className="w-4 h-4" />
             </div>
             <div>
-              <p className="text-xs font-semibold text-white">1. Direct Lighting</p>
-              <p className="text-xs text-slate-400">Ensure good lighting and face the camera directly.</p>
+              <p className="text-xs font-semibold text-white">1. Good Lighting</p>
+              <p className="text-xs text-slate-400">Position yourself in a well-lit area. Avoid harsh backlights or strong shadows across your face.</p>
             </div>
           </div>
 
@@ -58,42 +58,31 @@ export default function TipsModal({ onClose }: TipsModalProps) {
               <Camera className="w-4 h-4" />
             </div>
             <div>
-              <p className="text-xs font-semibold text-white">2. Unobstructed View</p>
-              <p className="text-xs text-slate-400">Avoid covering your face or wearing heavy accessories.</p>
+              <p className="text-xs font-semibold text-white">2. Camera Angle</p>
+              <p className="text-xs text-slate-400">Hold the camera at eye level, capturing the full face structure directly.</p>
             </div>
           </div>
 
           {/* Tip 3 */}
           <div className="flex gap-3 leading-relaxed">
             <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-brand-cyan border border-white/5">
-              <Play className="w-4 h-4" />
+              <ShieldAlert className="w-4 h-4" />
             </div>
             <div>
-              <p className="text-xs font-semibold text-white">3. Instant Analysis</p>
-              <p className="text-xs text-slate-400">Tap Scan to detect — results appear instantly.</p>
+              <p className="text-xs font-semibold text-white">3. No Obstructions</p>
+              <p className="text-xs text-slate-400">Ensure eyes, nose, and mouth are clear of eyeglasses, masks, or heavy hair blockages.</p>
             </div>
           </div>
 
           {/* Tip 4 */}
           <div className="flex gap-3 leading-relaxed">
             <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-brand-cyan border border-white/5">
-              <History className="w-4 h-4" />
+              <Sparkles className="w-4 h-4 animate-pulse" />
             </div>
             <div>
-              <p className="text-xs font-semibold text-white">4. Saved Directory</p>
-              <p className="text-xs text-slate-400">Check History to view your past scans.</p>
-            </div>
-          </div>
-
-          {/* Tip 5 */}
-          <div className="flex gap-3 leading-relaxed">
-            <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-amber-400 border border-white/5">
-              <ShieldAlert className="w-4 h-4" />
-            </div>
-            <div>
-              <p className="text-xs font-semibold text-amber-400">5. Registered Dataset Only</p>
-              <p className="text-xs text-slate-400">This app identifies 10 registered persons only.</p>
-              <p className="text-[10px] text-emerald-400 font-medium mt-0.5 animate-pulse">Face data stays on your device only</p>
+              <p className="text-xs font-semibold text-brand-cyan">4. Photo Variety</p>
+              <p className="text-xs text-slate-400">For enrollment, tilt your head slightly in different directions under good illumination to formulate a comprehensive dataset.</p>
+              <p className="text-[10px] text-emerald-400 font-medium mt-1">Face data stays on your device only</p>
             </div>
           </div>
         </div>

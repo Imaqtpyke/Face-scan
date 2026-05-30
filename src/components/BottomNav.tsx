@@ -4,7 +4,7 @@
  */
 
 import { Link, useLocation } from "react-router-dom";
-import { Home, History } from "lucide-react";
+import { Home, History, Users } from "lucide-react";
 
 export default function BottomNav() {
   const location = useLocation();
@@ -12,6 +12,7 @@ export default function BottomNav() {
 
   const isHomeActive = currentPath === "/" || currentPath === "/result";
   const isHistoryActive = currentPath === "/history";
+  const isPersonsActive = currentPath.startsWith("/persons");
 
   return (
     <div className="absolute bottom-0 left-0 right-0 p-4 pb-6 bg-[#0a0f1e]/85 backdrop-blur-xl border-t border-white/10 z-40 max-w-[480px] mx-auto">
@@ -19,7 +20,7 @@ export default function BottomNav() {
         {/* Home Link */}
         <Link 
           to="/" 
-          className={`flex flex-col items-center justify-center gap-1 w-20 py-1 transition-all duration-200 group relative ${
+          className={`flex flex-col items-center justify-center gap-1 w-16 py-1 transition-all duration-200 group relative ${
             isHomeActive ? "text-brand-cyan" : "text-slate-400 hover:text-white"
           }`}
         >
@@ -35,7 +36,7 @@ export default function BottomNav() {
         {/* History Link */}
         <Link 
           to="/history" 
-          className={`flex flex-col items-center justify-center gap-1 w-20 py-1 transition-all duration-200 group relative ${
+          className={`flex flex-col items-center justify-center gap-1 w-16 py-1 transition-all duration-200 group relative ${
             isHistoryActive ? "text-brand-cyan" : "text-slate-400 hover:text-white"
           }`}
         >
@@ -44,6 +45,22 @@ export default function BottomNav() {
             History
           </span>
           {isHistoryActive && (
+            <span className="absolute -bottom-1 w-8 h-1 bg-brand-cyan rounded-full shadow-[0_0_8px_#00d4ff]" />
+          )}
+        </Link>
+
+        {/* Persons Link */}
+        <Link 
+          to="/persons" 
+          className={`flex flex-col items-center justify-center gap-1 w-16 py-1 transition-all duration-200 group relative ${
+            isPersonsActive ? "text-brand-cyan" : "text-slate-400 hover:text-white"
+          }`}
+        >
+          <Users className="w-5.5 h-5.5 group-active:scale-95 transition-transform" />
+          <span className="text-[10px] font-display font-medium uppercase tracking-wider">
+            Persons
+          </span>
+          {isPersonsActive && (
             <span className="absolute -bottom-1 w-8 h-1 bg-brand-cyan rounded-full shadow-[0_0_8px_#00d4ff]" />
           )}
         </Link>

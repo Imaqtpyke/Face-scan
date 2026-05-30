@@ -3,10 +3,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState, useEffect, useRef } from "react";
-import { HelpCircle, Shield, Globe } from "lucide-react";
+import { useState, useEffect } from "react";
+import { HelpCircle, Globe } from "lucide-react";
 import CameraViewfinder from "../components/CameraViewfinder";
-import { REGISTERED_PERSONS, ScanResult } from "../types";
+import { getPersons } from "../lib/indexedDb";
+import { ScanResult } from "../types";
 
 interface HomeProps {
   onDetected: (detectedScan: ScanResult) => void;
@@ -17,86 +18,20 @@ export type ScanStatus = "scanning" | "unrecognized" | "multiple" | "noface_time
 
 export default function Home({ onDetected, onOpenTips }: HomeProps) {
   const [status, setStatus] = useState<ScanStatus>("scanning");
-  
-  // Track continuous simulation time
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const elapsedRef = useRef<number>(0);
-  const isTransitioningRef = useRef<boolean>(false);
-  const matchedPersonRef = useRef<any>(null);
+  const [personsCount, setPersonsCount] = useState<number | null>(null);
 
   useEffect(() => {
-    // Select one random person at start of this session so the scan resolves to a direct person
-    const selectedIndex = Math.floor(Math.random() * REGISTERED_PERSONS.length);
-    matchedPersonRef.current = REGISTERED_PERSONS[selectedIndex];
-
-    // Every 100ms, advance simulation frame
-    timerRef.current = setInterval(() => {
-      if (isTransitioningRef.current) return;
-
-      elapsedRef.current += 100;
-      const t = elapsedRef.current;
-
-      if (t >= 0 && t < 5000) {
-        // State 1: Scanning, no face. Default status
-        setStatus("scanning");
-      } 
-      else if (t >= 5000 && t < 7000) {
-        // State 2: No face detected for 5+ seconds
-        setStatus("noface_timeout");
-      } 
-      else if (t >= 7000 && t < 10000) {
-        // State 3: Face enters frame but is unrecognized / low confidence (< 80%)
-        setStatus("unrecognized");
-      } 
-      else if (t >= 10000 && t < 12500) {
-        // State 4: Multiple faces detected glitch
-        setStatus("multiple");
-      } 
-      else if (t >= 12500 && t < 13500) {
-        // State 5: Stabilizing back to single face
-        setStatus("scanning");
-      } 
-      else if (t >= 13500) {
-        // State 6: Locked on registered face!
-        // Stays high for 500ms debounce (ticks at 13500, 13600, 13700, 13800, 13900, 14000)
-        if (t >= 14000) {
-          isTransitioningRef.current = true;
-          setStatus("confirmed");
-
-          // Let solid green brackets flash for 200ms
-          setTimeout(() => {
-            const subject = matchedPersonRef.current;
-            const confidence = Math.floor(Math.random() * 15) + 84; // 84% to 98%
-
-            const finalScanResult: ScanResult = {
-              id: `scan-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
-              name: subject.name,
-              role: subject.role,
-              department: subject.department,
-              accessLevel: subject.accessLevel,
-              confidence: confidence,
-              timestamp: new Date().toLocaleTimeString(undefined, {
-                hour: "2-digit",
-                minute: "2-digit",
-                second: "2-digit"
-              }),
-              faceSignature: subject.faceSignature,
-              avatarColor: subject.avatarColor,
-              avatarIconText: subject.avatarIconText
-            };
-
-            onDetected(finalScanResult);
-          }, 200);
-        }
+    async function fetchCount() {
+      try {
+        const list = await getPersons();
+        setPersonsCount(list.length);
+      } catch (err) {
+        console.error("Failed fetching persons count:", err);
       }
-    }, 100);
+    }
+    fetchCount();
+  }, []);
 
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, [onDetected]);
-
-  // Translate scan status to live helper string
   const getStatusMessage = () => {
     switch (status) {
       case "scanning":
@@ -132,6 +67,24 @@ export default function Home({ onDetected, onOpenTips }: HomeProps) {
           <p className="text-xs text-slate-400 mt-1">
             Identify registered persons instantly
           </p>
+          
+          {personsCount !== null && (
+            <div className="mt-3 inline-flex">
+              {personsCount === 0 ? (
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-mono font-medium tracking-wide bg-red-500/10 text-red-400 border border-red-500/20">
+                  No persons registered
+                </span>
+              ) : personsCount >= 10 ? (
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-mono font-medium tracking-wide bg-brand-cyan/10 text-brand-cyan border border-brand-cyan/20">
+                  10 / 10 — Full
+                </span>
+              ) : (
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-mono font-medium tracking-wide bg-white/[0.04] text-slate-300 border border-white/10">
+                  {personsCount} / 10 persons registered
+                </span>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Display Tips Button */}
@@ -146,7 +99,11 @@ export default function Home({ onDetected, onOpenTips }: HomeProps) {
 
       {/* Main Viewfinder Section */}
       <div className="flex-1 flex flex-col justify-center items-center my-auto">
-        <CameraViewfinder status={status} />
+        <CameraViewfinder 
+          status={status} 
+          onStatusChange={setStatus} 
+          onDetected={onDetected} 
+        />
         
         {/* Dynamic real-time biometric state feedback */}
         <div className="mt-5 text-center min-h-[44px]">
@@ -165,7 +122,7 @@ export default function Home({ onDetected, onOpenTips }: HomeProps) {
           </span>
         </div>
 
-        {/* Subtle Static Works Offline Badge in body */}
+        {/* Subtle Static Works Offline Badge */}
         <div className="mt-8 flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.03] border border-white/5 text-[10px] text-slate-400 select-none">
           <Globe className="w-3.5 h-3.5 text-emerald-500" />
           <span>Biometric database matches local device · Works offline</span>
